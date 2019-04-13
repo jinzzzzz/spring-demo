@@ -10,6 +10,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/spring-core" />
+            <option value="$PROJECT_DIR$/spring-test" />
+            <option value="$PROJECT_DIR$/spring-webmvc" />
           </set>
         </option>
       </GradleProjectSettings>

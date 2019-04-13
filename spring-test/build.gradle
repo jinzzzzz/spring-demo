@@ -1,0 +1,4 @@
+apply plugin:"war"
+dependencies {
+    compile(project(':spring-webmvc'))
+}
