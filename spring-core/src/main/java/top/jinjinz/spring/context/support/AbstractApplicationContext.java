@@ -12,23 +12,18 @@ import top.jinjinz.spring.context.ApplicationContext;
  */
 public abstract class AbstractApplicationContext implements ApplicationContext {
 
-    public void refresh(){
+    public void refresh() throws Exception{
         BeanFactory beanFactory = obtainFreshBeanFactory();
     }
 
-    protected BeanFactory obtainFreshBeanFactory() {
+    protected BeanFactory obtainFreshBeanFactory() throws Exception{
         //具体实现调用子类容器的refreshBeanFactory()方法
         refreshBeanFactory();
         BeanFactory beanFactory = getBeanFactory();
         return beanFactory;
     }
 
-    protected abstract void refreshBeanFactory();
+    protected abstract void refreshBeanFactory() throws Exception;
 
     public abstract BeanFactory getBeanFactory();
-
-    @Override
-    public Object getBean(String name) {
-        return getBeanFactory().getBean(name);
-    }
 }

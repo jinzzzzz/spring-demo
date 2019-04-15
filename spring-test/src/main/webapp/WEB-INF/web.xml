@@ -7,7 +7,7 @@
 	<display-name>Web Application</display-name>
 	<servlet>
 		<servlet-name>mvc</servlet-name>
-		<servlet-class>top.jinjinz.spring.test.servlet.DispatcherServlet</servlet-class>
+		<servlet-class>top.jinjinz.spring.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>application.properties</param-value>

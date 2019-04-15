@@ -7,7 +7,7 @@ import top.jinjinz.spring.beans.factory.config.BeanDefinition;
  * author:jinjin
  * Date:2019/4/13 23:27
  */
-public class AbstractBeanDefinition implements BeanDefinition{
+public abstract class AbstractBeanDefinition implements BeanDefinition{
 
     private volatile String beanClass;
 
