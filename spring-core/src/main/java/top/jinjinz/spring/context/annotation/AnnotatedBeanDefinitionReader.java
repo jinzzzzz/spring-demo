@@ -1,6 +1,8 @@
 package top.jinjinz.spring.context.annotation;
 
 import top.jinjinz.spring.beans.factory.annotation.AnnotatedBeanDefinition;
+import top.jinjinz.spring.beans.factory.annotation.Controller;
+import top.jinjinz.spring.beans.factory.annotation.Service;
 import top.jinjinz.spring.beans.factory.config.BeanDefinition;
 import top.jinjinz.spring.beans.factory.support.BeanDefinitionRegistry;
 
@@ -17,17 +19,20 @@ public class AnnotatedBeanDefinitionReader {
         this.registry = registry;
     }
 
-    public void register(Class<?>... annotatedClasses) {
+    public void register(Class<?>... annotatedClasses) throws Exception{
         for (Class<?> annotatedClass : annotatedClasses) {
             registerBean(annotatedClass);
         }
     }
 
-    public void registerBean(Class<?> annotatedClass) {
-        doRegisterBean(annotatedClass);
+    public void registerBean(Class<?> annotatedClass) throws Exception{
+        //IOC容器中只注册加了指定注解的类
+        if((annotatedClass.isAnnotationPresent(Controller.class) || annotatedClass.isAnnotationPresent(Service.class))){
+            doRegisterBean(annotatedClass);
+        }
     }
 
-    private <T> void doRegisterBean(Class<T> annotatedClass){
+    private <T> void doRegisterBean(Class<T> annotatedClass) throws Exception{
         registry.registerBeanDefinition(annotatedClass.getName(),doCreateBeanDefinition(
                 toLowerFirstCase(annotatedClass.getSimpleName()),annotatedClass.getName()));
         Class<?> [] interfaces = annotatedClass.getInterfaces();

@@ -1,8 +1,11 @@
 package top.jinjinz.spring.beans.factory.support;
 
+import top.jinjinz.spring.beans.BeanWrapper;
 import top.jinjinz.spring.beans.factory.BeanFactory;
+import top.jinjinz.spring.beans.factory.annotation.Autowired;
 import top.jinjinz.spring.beans.factory.config.BeanDefinition;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,6 +21,10 @@ public class DefaultListableBeanFactory implements BeanFactory,BeanDefinitionReg
     /** 缓存singleton类型实例: bean name --> bean instance */
     private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
+    /** 正在创建的bean集合 */
+    private final Set<String> singletonsCurrentlyInCreation =
+            Collections.newSetFromMap(new ConcurrentHashMap<>(16));
+
 
     @Override
     public Object getBean(String name) throws Exception{
@@ -25,7 +32,7 @@ public class DefaultListableBeanFactory implements BeanFactory,BeanDefinitionReg
     }
 
     @Override
-    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
+    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws Exception{
         this.beanDefinitionMap.put(beanName, beanDefinition);
     }
 
@@ -60,17 +67,72 @@ public class DefaultListableBeanFactory implements BeanFactory,BeanDefinitionReg
     private Object doGetBean(final String beanName) throws Exception{
         //先从缓存中取已经被创建的singleton类型的Bean
         Object singletonInstance =  this.singletonObjects.get(beanName);
-        BeanDefinition beanDefinition = this.beanDefinitionMap.get(beanName);
-        Object instance = null;
-        //开始创建singleton实例
-        if(null == singletonInstance){
-            Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
-            instance = clazz.newInstance();
-            this.singletonObjects.put(beanDefinition.getBeanClassName(),instance);
-            this.singletonObjects.put(beanDefinition.getFactoryBeanName(),instance);
+        if(null != singletonInstance){
+            return singletonInstance;
         }
+
+        //循环引用
+        if(singletonsCurrentlyInCreation.contains(beanName)){
+            throw new RuntimeException(beanName+"发生循环引用");
+        }
+
+        //开始创建单例的实例
+        Object instance = null;
+        BeanDefinition beanDefinition = this.beanDefinitionMap.get(beanName);
+        if(null == beanDefinition){
+            throw new RuntimeException(beanName+"不存在");
+        }
+
+        Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
+        instance = clazz.newInstance();
+        populateBean(instance,beanDefinition,clazz);
+
+        //将类名和注解值都作为key值放入map,接口将类型名称存入
+        this.singletonObjects.put(beanDefinition.getBeanClassName(),instance);
+        this.singletonObjects.put(beanDefinition.getFactoryBeanName(),instance);
         return instance;
     }
 
+    //对字段进行依赖注入,只注入对象类型,基本类型未判断
+    private void populateBean(Object instance, BeanDefinition beanDefinition, Class<?> clazz) throws Exception{
+        Object autowiredBean;
+        //加入正在创建的bean集合中，防止循环引用
+        singletonsCurrentlyInCreation.add(beanDefinition.getBeanClassName());
+        //获得所有的字段
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            //只对加了注解的字段进行依赖注入
+            if(!field.isAnnotationPresent(Autowired.class)){ continue;}
 
+            Autowired autowired = field.getAnnotation(Autowired.class);
+
+            String autowiredBeanName =  autowired.value().trim();
+            if("".equals(autowiredBeanName)){
+                autowiredBeanName = field.getType().getName();
+            }
+
+            //访问私有变量
+            field.setAccessible(true);
+
+            try {
+                //获取需要注入的实例
+                autowiredBean = this.singletonObjects.get(autowiredBeanName);
+                //如果需要注入的实例还未创建,则创建
+                if(null == autowiredBean){
+                    //递归创建bean
+                    getBean(autowiredBeanName);
+                    /*autowiredBean = this.singletonObjects.get(autowiredBeanName);
+                    if(null == autowiredBean){
+                        throw new RuntimeException(autowiredBeanName+"不存在");
+                    }*/
+                }
+                field.set(instance,autowiredBean);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
+        //注入完成后删除
+        singletonsCurrentlyInCreation.remove(beanDefinition.getBeanClassName());
+    }
 }

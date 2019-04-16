@@ -54,8 +54,8 @@ public class PropertiesApplicationContext extends AbstractApplicationContext imp
     @Override
     protected void refreshBeanFactory() throws Exception{
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-        loadBeanDefinitions(beanFactory);
         this.beanFactory = beanFactory;
+        loadBeanDefinitions(beanFactory);
     }
 
     @Override
@@ -65,11 +65,11 @@ public class PropertiesApplicationContext extends AbstractApplicationContext imp
 
     @Override
     public Object getBean(String beanName) throws Exception {
-        return getBeanFactory().getBean(beanName);
+        return this.beanFactory.getBean(beanName);
     }
 
     @Override
-    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
+    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws Exception{
         this.beanFactory.registerBeanDefinition(beanName,beanDefinition);
     }
 
@@ -104,6 +104,13 @@ public class PropertiesApplicationContext extends AbstractApplicationContext imp
         if (!this.annotatedClasses.isEmpty()) {
             reader.register(this.annotatedClasses.toArray(new Class<?>[0]));
         }
+
+        //将注册的bean进行初始化,默认不进行懒加载
+        String[] beanNames = beanFactory.getBeanDefinitionNames();
+        for (String beanName:beanNames) {
+            getBean(beanName);
+        }
+        System.out.println("debug");
     }
 
     private void doScanner(String scanPackage) throws Exception {
