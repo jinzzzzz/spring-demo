@@ -110,7 +110,6 @@ public class PropertiesApplicationContext extends AbstractApplicationContext imp
         for (String beanName:beanNames) {
             getBean(beanName);
         }
-        System.out.println("debug");
     }
 
     private void doScanner(String scanPackage) throws Exception {
