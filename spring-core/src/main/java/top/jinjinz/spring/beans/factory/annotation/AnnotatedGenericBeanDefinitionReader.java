@@ -13,9 +13,6 @@ import java.util.Properties;
  * @date 2019-04-15
  */
 public class AnnotatedGenericBeanDefinitionReader extends AbstractBeanDefinitionReader {
-
-
-
     public AnnotatedGenericBeanDefinitionReader(BeanDefinitionRegistry registry) {
         super(registry);
     }

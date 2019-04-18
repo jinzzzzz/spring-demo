@@ -1,6 +1,7 @@
 package top.jinjinz.spring.context.annotation;
 
 import top.jinjinz.spring.beans.factory.annotation.AnnotatedBeanDefinition;
+import top.jinjinz.spring.beans.factory.annotation.Component;
 import top.jinjinz.spring.beans.factory.annotation.Controller;
 import top.jinjinz.spring.beans.factory.annotation.Service;
 import top.jinjinz.spring.beans.factory.config.BeanDefinition;
@@ -27,9 +28,14 @@ public class AnnotatedBeanDefinitionReader {
 
     public void registerBean(Class<?> annotatedClass) throws Exception{
         //IOC容器中只注册加了指定注解的类
-        if((annotatedClass.isAnnotationPresent(Controller.class) || annotatedClass.isAnnotationPresent(Service.class))){
+        if(isRegister(annotatedClass)){
             doRegisterBean(annotatedClass);
         }
+    }
+
+    private boolean isRegister(Class<?> annotatedClass){
+        return annotatedClass.isAnnotationPresent(Component.class)||
+               annotatedClass.isAnnotationPresent(Controller.class)||annotatedClass.isAnnotationPresent(Service.class);
     }
 
     private <T> void doRegisterBean(Class<T> annotatedClass) throws Exception{

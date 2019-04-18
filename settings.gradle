@@ -1,7 +1,6 @@
 rootProject.name = 'spring-demo'
 include 'spring-core'
 include 'spring-webmvc'
-include 'untitled'
-findProject(':untitled')?.name = 'spring-demo'
 include 'spring-test'
+include 'spring-aop'
 

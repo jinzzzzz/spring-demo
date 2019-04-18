@@ -4,6 +4,7 @@ import top.jinjinz.spring.beans.BeanWrapper;
 import top.jinjinz.spring.beans.factory.BeanFactory;
 import top.jinjinz.spring.beans.factory.annotation.Autowired;
 import top.jinjinz.spring.beans.factory.config.BeanDefinition;
+import top.jinjinz.spring.beans.factory.config.BeanPostProcessor;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -25,6 +26,8 @@ public class DefaultListableBeanFactory implements BeanFactory,BeanDefinitionReg
     private final Set<String> singletonsCurrentlyInCreation =
             Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
+    /** 创建bean时应用的处理器 */
+    private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
     @Override
     public Object getBean(String name) throws Exception{
@@ -87,10 +90,48 @@ public class DefaultListableBeanFactory implements BeanFactory,BeanDefinitionReg
         instance = clazz.newInstance();
         populateBean(instance,beanDefinition,clazz);
 
+        if (false) {
+            instance = applyBeanPostProcessorsBeforeInitialization(instance, beanName);
+            instance = applyBeanPostProcessorsAfterInitialization(instance, beanName);
+        }
+
         //将类名和注解值都作为key值放入map,接口将类型名称存入
         this.singletonObjects.put(beanDefinition.getBeanClassName(),instance);
         this.singletonObjects.put(beanDefinition.getFactoryBeanName(),instance);
         return instance;
+    }
+
+    //调用BeanPostProcessor 初始化调用实例之前的处理方法
+    private Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
+            throws Exception {
+        Object result = existingBean;
+        //遍历容器为所创建的Bean添加的所有BeanPostProcessor
+        for (BeanPostProcessor beanProcessor : beanPostProcessors) {
+            //Bean实例对象在初始化之前做一些自定义的处理操作
+            Object current = beanProcessor.postProcessBeforeInitialization(result, beanName);
+            if (current == null) {
+                return result;
+            }
+            result = current;
+        }
+        return result;
+    }
+
+    //调用BeanPostProcessor 初始化调用实例之后的处理方法
+    public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
+            throws Exception {
+
+        Object result = existingBean;
+        //遍历容器为所创建的Bean添加的所有BeanPostProcessor
+        for (BeanPostProcessor beanProcessor : beanPostProcessors) {
+            //Bean实例对象在初始化之后做一些自定义的处理操作
+            Object current = beanProcessor.postProcessAfterInitialization(result, beanName);
+            if (current == null) {
+                return result;
+            }
+            result = current;
+        }
+        return result;
     }
 
     //对字段进行依赖注入,只注入对象类型,基本类型未判断
