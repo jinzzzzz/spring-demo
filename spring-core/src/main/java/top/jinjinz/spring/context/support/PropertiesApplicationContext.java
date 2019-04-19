@@ -2,6 +2,7 @@ package top.jinjinz.spring.context.support;
 
 import top.jinjinz.spring.beans.factory.BeanFactory;
 import top.jinjinz.spring.beans.factory.config.BeanDefinition;
+import top.jinjinz.spring.beans.factory.config.BeanPostProcessor;
 import top.jinjinz.spring.beans.factory.support.BeanDefinitionRegistry;
 import top.jinjinz.spring.beans.factory.support.DefaultListableBeanFactory;
 import top.jinjinz.spring.context.annotation.AnnotatedBeanDefinitionReader;
@@ -98,6 +99,11 @@ public class PropertiesApplicationContext extends AbstractApplicationContext imp
         return this.beanFactory.getBeanDefinitionCount();
     }
 
+    @Override
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        this.beanFactory.addBeanPostProcessor(beanPostProcessor);
+    }
+
     private void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws Exception{
         AnnotatedBeanDefinitionReader reader =
                 new AnnotatedBeanDefinitionReader(beanFactory);
@@ -105,7 +111,7 @@ public class PropertiesApplicationContext extends AbstractApplicationContext imp
             reader.register(this.annotatedClasses.toArray(new Class<?>[0]));
         }
 
-        //将注册的bean进行初始化,默认不进行懒加载
+        //将注册的bean进行初始化
         String[] beanNames = beanFactory.getBeanDefinitionNames();
         for (String beanName:beanNames) {
             getBean(beanName);

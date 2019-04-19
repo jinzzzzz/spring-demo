@@ -1,6 +1,5 @@
 package top.jinjinz.spring.beans.factory.support;
 
-import top.jinjinz.spring.beans.BeanWrapper;
 import top.jinjinz.spring.beans.factory.BeanFactory;
 import top.jinjinz.spring.beans.factory.annotation.Autowired;
 import top.jinjinz.spring.beans.factory.config.BeanDefinition;
@@ -65,6 +64,12 @@ public class DefaultListableBeanFactory implements BeanFactory,BeanDefinitionReg
         return this.beanDefinitionMap.size();
     }
 
+    @Override
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessors.remove(beanPostProcessor);
+        this.beanPostProcessors.add(beanPostProcessor);
+    }
+
 
     //从容器中获取beanDefinition，如果没有创建实例则创建实例并初始化
     private Object doGetBean(final String beanName) throws Exception{
@@ -90,7 +95,7 @@ public class DefaultListableBeanFactory implements BeanFactory,BeanDefinitionReg
         instance = clazz.newInstance();
         populateBean(instance,beanDefinition,clazz);
 
-        if (false) {
+        if (true) {
             instance = applyBeanPostProcessorsBeforeInitialization(instance, beanName);
             instance = applyBeanPostProcessorsAfterInitialization(instance, beanName);
         }

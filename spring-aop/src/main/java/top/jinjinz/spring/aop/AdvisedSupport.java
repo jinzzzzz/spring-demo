@@ -26,6 +26,7 @@ public class AdvisedSupport {
         List<Object> cached = this.methodCache.get(method);
         if (cached == null) {
             Method m = targetClass.getMethod(method.getName(),method.getParameterTypes());
+            cached = methodCache.get(m);
             this.methodCache.put(method, cached);
         }
         return cached;

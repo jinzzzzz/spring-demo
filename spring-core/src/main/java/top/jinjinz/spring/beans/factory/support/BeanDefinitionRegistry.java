@@ -1,6 +1,7 @@
 package top.jinjinz.spring.beans.factory.support;
 
 import top.jinjinz.spring.beans.factory.config.BeanDefinition;
+import top.jinjinz.spring.beans.factory.config.BeanPostProcessor;
 
 /**
  * 保存BeanDefinition的容器
@@ -20,4 +21,7 @@ public interface BeanDefinitionRegistry {
     String[] getBeanDefinitionNames();
 
     int getBeanDefinitionCount();
+
+    //增加bean回调处理器
+    void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 }

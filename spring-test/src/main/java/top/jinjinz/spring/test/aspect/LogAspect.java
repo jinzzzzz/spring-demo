@@ -34,10 +34,10 @@ public class LogAspect {
                 "\nTargetObject:" +  joinPoint.getThis());
     }
 
-    @AfterThrowing(pointcut="public .* top.jinjinz.spring.test.service..*Service..*(.*)",throwing="ex")
+    /*@AfterThrowing("public .* top.jinjinz.spring.test.service..*Service..*(.*)")
     public void afterThrowing(Joinpoint joinPoint, Throwable ex){
         System.out.println("出现异常" +
                 "\nTargetObject:" +  joinPoint.getThis() +
                 "\nThrows:" + ex.getMessage());
-    }
+    }*/
 }
