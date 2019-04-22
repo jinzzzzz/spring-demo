@@ -14,6 +14,8 @@ public class DemoServiceImpl implements DemoService {
 
     @Override
     public String hello(String name) {
-        return "hello "+name;
+        String hello = "hello "+name;
+        System.out.println("执行方法返回："+hello);
+        return hello;
     }
 }

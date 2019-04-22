@@ -1,5 +1,6 @@
 package top.jinjinz.spring.beans.factory.support;
 
+import top.jinjinz.spring.aop.annotation.AopProxyUtils;
 import top.jinjinz.spring.beans.factory.BeanFactory;
 import top.jinjinz.spring.beans.factory.annotation.Autowired;
 import top.jinjinz.spring.beans.factory.config.BeanDefinition;
@@ -94,11 +95,9 @@ public class DefaultListableBeanFactory implements BeanFactory,BeanDefinitionReg
         Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
         instance = clazz.newInstance();
         populateBean(instance,beanDefinition,clazz);
+        instance = applyBeanPostProcessorsBeforeInitialization(instance, beanName);
+        //instance = applyBeanPostProcessorsAfterInitialization(instance, beanName);
 
-        if (true) {
-            instance = applyBeanPostProcessorsBeforeInitialization(instance, beanName);
-            instance = applyBeanPostProcessorsAfterInitialization(instance, beanName);
-        }
 
         //将类名和注解值都作为key值放入map,接口将类型名称存入
         this.singletonObjects.put(beanDefinition.getBeanClassName(),instance);
@@ -113,7 +112,7 @@ public class DefaultListableBeanFactory implements BeanFactory,BeanDefinitionReg
         //遍历容器为所创建的Bean添加的所有BeanPostProcessor
         for (BeanPostProcessor beanProcessor : beanPostProcessors) {
             //Bean实例对象在初始化之前做一些自定义的处理操作
-            Object current = beanProcessor.postProcessBeforeInitialization(result, beanName);
+            Object current = beanProcessor.postProcessBeforeInitialization(result, beanName,this);
             if (current == null) {
                 return result;
             }
@@ -130,7 +129,7 @@ public class DefaultListableBeanFactory implements BeanFactory,BeanDefinitionReg
         //遍历容器为所创建的Bean添加的所有BeanPostProcessor
         for (BeanPostProcessor beanProcessor : beanPostProcessors) {
             //Bean实例对象在初始化之后做一些自定义的处理操作
-            Object current = beanProcessor.postProcessAfterInitialization(result, beanName);
+            Object current = beanProcessor.postProcessAfterInitialization(result, beanName,this);
             if (current == null) {
                 return result;
             }

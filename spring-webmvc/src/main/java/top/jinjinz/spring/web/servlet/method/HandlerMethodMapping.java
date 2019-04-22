@@ -1,5 +1,6 @@
 package top.jinjinz.spring.web.servlet.method;
 
+import top.jinjinz.spring.aop.annotation.AopProxyUtils;
 import top.jinjinz.spring.beans.factory.annotation.Controller;
 import top.jinjinz.spring.beans.factory.annotation.RequestMapping;
 import top.jinjinz.spring.context.ApplicationContext;
@@ -38,8 +39,9 @@ public class HandlerMethodMapping implements HandlerMapping {
             for (String beanName : beanNames) {
 
                 Object bean = context.getBean(beanName);
+                Object target = AopProxyUtils.getTargetObject(bean);
 
-                Class<?> clazz = bean.getClass();
+                Class<?> clazz = target.getClass();
 
                 //只对加了@Controller注解的类进行初始化
                 if(!clazz.isAnnotationPresent(Controller.class)){
@@ -68,7 +70,7 @@ public class HandlerMethodMapping implements HandlerMapping {
                     String regex = ("/" + baseUrl + "/" + requestMapping.value().
                             replaceAll("\\*",".*")).replaceAll("/+", "/");
 
-                    this.mappingRegistry.register(regex,bean,method);
+                    this.mappingRegistry.register(regex,target,method);
                     System.out.println("Mapped " + regex + "," + method);
                 }
             }

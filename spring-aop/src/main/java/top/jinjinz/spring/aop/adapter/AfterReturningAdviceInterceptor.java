@@ -9,23 +9,24 @@ import top.jinjinz.spring.aop.intercept.MethodInvocation;
 import java.lang.reflect.Method;
 
 /**
- * 拦截器-before
+ * 拦截器-after
  * @author jinjin
- * @date 2019-04-19
+ * @date 2019-04-22
  */
-public class MethodBeforeAdviceInterceptor extends AbstractAspectJAdvice implements MethodInterceptor {
+public class AfterReturningAdviceInterceptor extends AbstractAspectJAdvice implements MethodInterceptor {
     private Joinpoint joinPoint;
-    public MethodBeforeAdviceInterceptor(AspectJAdvice aspectJAdvice) {
+    public AfterReturningAdviceInterceptor(AspectJAdvice aspectJAdvice) {
         super(aspectJAdvice);
     }
 
-    private void before(Method method,Object[] args,Object target) throws Throwable{
+    private void afterReturning(Object retVal,Method method, Object[] args, Object target) throws Throwable{
         super.invokeAdviceMethod(this.joinPoint,null,null);
     }
     @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+        Object retVal = methodInvocation.proceed();
         this.joinPoint = methodInvocation;
-        before(methodInvocation.getMethod(), methodInvocation.getArguments(), methodInvocation.getThis());
-        return methodInvocation.proceed();
+        this.afterReturning(retVal,methodInvocation.getMethod(),methodInvocation.getArguments(),methodInvocation.getThis());
+        return retVal;
     }
 }

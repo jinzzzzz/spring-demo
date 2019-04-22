@@ -4,6 +4,7 @@ import top.jinjinz.spring.aop.annotation.After;
 import top.jinjinz.spring.aop.annotation.AfterThrowing;
 import top.jinjinz.spring.aop.annotation.Aspect;
 import top.jinjinz.spring.aop.annotation.Before;
+import top.jinjinz.spring.aop.aspectj.AspectJAdvice;
 import top.jinjinz.spring.aop.autoproxy.AutoProxyCreator;
 import top.jinjinz.spring.beans.factory.annotation.AnnotatedBeanDefinition;
 import top.jinjinz.spring.beans.factory.annotation.Component;
@@ -28,7 +29,7 @@ public class AnnotatedBeanDefinitionReader {
 
     private final BeanDefinitionRegistry registry;
 
-    private Map<String,List<Method>> aspectMethods = new HashMap<>();
+    private Map<String,List<AspectJAdvice>> aspectMethods = new HashMap<>();
 
     private List<String> patterns = new ArrayList<>();
 
@@ -40,8 +41,7 @@ public class AnnotatedBeanDefinitionReader {
         for (Class<?> annotatedClass : annotatedClasses) {
             registerBean(annotatedClass);
         }
-        BeanPostProcessor autoProxyCreator = new AutoProxyCreator(aspectMethods,
-                patterns.stream().distinct().collect(Collectors.toList()));
+        BeanPostProcessor autoProxyCreator = new AutoProxyCreator(aspectMethods,patterns);
         registry.addBeanPostProcessor(autoProxyCreator);
     }
 
@@ -63,7 +63,7 @@ public class AnnotatedBeanDefinitionReader {
 
     //注册Aspect信息
     private void parseAspect(Class<?> annotatedClass) {
-        List<Method> methodList;
+        List<AspectJAdvice> aspectJAdviceList;
         Method[] methods=annotatedClass.getMethods();
         String pointCut = "";
         for (Method method:methods) {
@@ -82,12 +82,12 @@ public class AnnotatedBeanDefinitionReader {
             if(!patterns.contains(pointCut)){
                 patterns.add(pointCut);
             }
-            methodList=aspectMethods.get(pointCut);
-            if(null == methodList){
-                methodList = new ArrayList<>();
+            aspectJAdviceList=aspectMethods.get(pointCut);
+            if(null == aspectJAdviceList){
+                aspectJAdviceList = new ArrayList<>();
             }
-            methodList.add(method);
-            aspectMethods.put(pointCut,methodList);
+            aspectJAdviceList.add(new AspectJAdvice(method,annotatedClass.getName()));
+            aspectMethods.put(pointCut,aspectJAdviceList);
         }
     }
 
