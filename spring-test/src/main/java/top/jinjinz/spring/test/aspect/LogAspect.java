@@ -1,7 +1,6 @@
 package top.jinjinz.spring.test.aspect;
 
 import top.jinjinz.spring.aop.annotation.After;
-import top.jinjinz.spring.aop.annotation.AfterThrowing;
 import top.jinjinz.spring.aop.annotation.Aspect;
 import top.jinjinz.spring.aop.annotation.Before;
 import top.jinjinz.spring.aop.intercept.Joinpoint;

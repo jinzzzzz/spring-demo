@@ -11,7 +11,6 @@ import top.jinjinz.spring.test.service.DemoService;
 @Service
 public class DemoServiceImpl implements DemoService {
 
-
     @Override
     public String hello(String name) {
         String hello = "hello "+name;

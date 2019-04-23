@@ -16,9 +16,6 @@ import top.jinjinz.spring.beans.factory.support.BeanDefinitionRegistry;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * 注解bean类的注册器

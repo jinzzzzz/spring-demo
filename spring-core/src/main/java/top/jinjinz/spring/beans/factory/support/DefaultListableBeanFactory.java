@@ -1,6 +1,5 @@
 package top.jinjinz.spring.beans.factory.support;
 
-import top.jinjinz.spring.aop.annotation.AopProxyUtils;
 import top.jinjinz.spring.beans.factory.BeanFactory;
 import top.jinjinz.spring.beans.factory.annotation.Autowired;
 import top.jinjinz.spring.beans.factory.config.BeanDefinition;

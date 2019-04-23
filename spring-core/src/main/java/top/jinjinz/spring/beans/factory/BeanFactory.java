@@ -1,7 +1,5 @@
 package top.jinjinz.spring.beans.factory;
 
-import top.jinjinz.spring.beans.factory.config.BeanDefinition;
-
 /**
  * 定义IOC容器的基本功能接口
  * author:jinjin
