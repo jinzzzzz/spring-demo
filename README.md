@@ -8,8 +8,6 @@
 
 # 项目搭建
 
-> 本篇博客代码地址:https://github.com/jinzzzzz/spring-demo
-
 ## 用户配置
 
 ### application.properties配置
