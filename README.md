@@ -2316,6 +2316,6 @@ scanPackage=top.jinjinz.spring
 
 ## 测试效果
 
-![](https://raw.githubusercontent.com/jinzzzzz/image/master/blog/spring/spring-code-demo.png)
+![](spring-code-demo.png)
 
-![](https://raw.githubusercontent.com/jinzzzzz/image/master/blog/spring/spring-code-con.png)
+![](spring-code-con.png)
